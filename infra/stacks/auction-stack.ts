@@ -1,6 +1,7 @@
 import * as cdk from "@aws-cdk/core";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as apigw from "@aws-cdk/aws-apigateway";
+import * as ddb from "@aws-cdk/aws-dynamodb";
 
 export class AuctionStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -24,8 +25,12 @@ export class AuctionStack extends cdk.Stack {
     );
     auctionResource.addMethod("POST", createAuctionIntegration);
 
-    // new cdk.CfnOutput(this, "api_endpoint", {
-    //   value: restApi.url,
-    // });
+    const auctionsTable = new ddb.Table(this, "AuctionsTable", {
+      tableName: "AuctionStack-AuctionsTable",
+      partitionKey: {
+        name: "id",
+        type: ddb.AttributeType.STRING,
+      },
+    });
   }
 }
