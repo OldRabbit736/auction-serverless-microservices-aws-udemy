@@ -1,4 +1,4 @@
-const createAuction = async (event, context) => {
+const createAuction = async (event: any, context: any) => {
   const { title } = JSON.parse(event.body);
 
   const auction = {
