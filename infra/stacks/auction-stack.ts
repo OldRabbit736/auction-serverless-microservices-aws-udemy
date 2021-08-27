@@ -35,5 +35,10 @@ export class AuctionStack extends cdk.Stack {
         type: ddb.AttributeType.STRING,
       },
     });
+    createAuctionLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantWriteData(createAuctionLambda);
   }
 }
