@@ -1,1 +1,8 @@
-GET https://7lqu8o9irf.execute-api.ap-northeast-2.amazonaws.com/prod/hello
+@apiendpoint=https://7lqu8o9irf.execute-api.ap-northeast-2.amazonaws.com/prod
+
+POST {{apiendpoint}}/auction
+Content-Type: application/json
+
+{
+    "title": "Super nice car"
+}
