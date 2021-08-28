@@ -9,7 +9,7 @@ const config: Config = {
   Stack: {
     AuctionService: {
       Name: "AuctionServiceStack",
-      Age: 35,
+      TableName: "AuctionsTable",
     },
   },
 };

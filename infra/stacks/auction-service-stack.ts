@@ -37,7 +37,7 @@ export class AuctionServiceStack extends base.BaseStack {
     auctionResource.addMethod("POST", createAuctionIntegration);
 
     const auctionsTable = new ddb.Table(this, "AuctionsTable", {
-      tableName: `${this.projectPrefix}-AuctionsTable`,
+      tableName: `${projectPrefix}-${stackConfig.TableName}`,
       partitionKey: {
         name: "id",
         type: ddb.AttributeType.STRING,

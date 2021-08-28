@@ -3,7 +3,7 @@ export type StackName = {
 };
 
 export type AuctionService = {
-  Age: number;
+  TableName: string;
 } & StackName;
 
 export type Config = {
