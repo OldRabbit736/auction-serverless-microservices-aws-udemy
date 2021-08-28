@@ -4,6 +4,7 @@ export type StackName = {
 
 export type AuctionService = {
   TableName: string;
+  ApiGateWayName: string;
 } & StackName;
 
 export type Config = {

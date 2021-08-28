@@ -27,6 +27,7 @@ export class AuctionServiceStack extends base.BaseStack {
     );
 
     const restApi = new apigw.RestApi(this, "Api", {
+      restApiName: `${projectPrefix}-${stackConfig.ApiGateWayName}`,
       endpointTypes: [apigw.EndpointType.REGIONAL],
     });
 

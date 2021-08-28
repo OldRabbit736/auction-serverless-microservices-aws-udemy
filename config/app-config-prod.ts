@@ -10,6 +10,7 @@ const config: Config = {
     AuctionService: {
       Name: "AuctionServiceStack",
       TableName: "AuctionsTable",
+      ApiGateWayName: "AuctionsService",
     },
   },
 };
