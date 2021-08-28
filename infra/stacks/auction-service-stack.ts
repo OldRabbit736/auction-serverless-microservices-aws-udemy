@@ -19,7 +19,7 @@ export class AuctionServiceStack extends base.BaseStack {
       this,
       "create-auction",
       {
-        entry: "codes/lambda/createAuction.ts",
+        entry: "codes/lambda/src/createAuction.ts",
         handler: "handler",
         memorySize: 128,
         timeout: cdk.Duration.minutes(2),
