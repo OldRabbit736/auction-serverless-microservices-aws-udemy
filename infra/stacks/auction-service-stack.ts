@@ -1,11 +1,19 @@
+import { StackName } from "../../config/types/config";
 import * as cdk from "@aws-cdk/core";
 import * as nodelambda from "@aws-cdk/aws-lambda-nodejs";
 import * as apigw from "@aws-cdk/aws-apigateway";
 import * as ddb from "@aws-cdk/aws-dynamodb";
 
-export class AuctionStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+import * as base from "../../lib/stack/base-stack";
+import { AuctionService } from "../../config/types/config";
+
+export class AuctionServiceStack extends base.BaseStack {
+  constructor(
+    scope: cdk.Construct,
+    projectPrefix: string,
+    stackConfig: AuctionService
+  ) {
+    super(scope, projectPrefix, stackConfig.Name);
 
     const createAuctionLambda = new nodelambda.NodejsFunction(
       this,
@@ -29,7 +37,7 @@ export class AuctionStack extends cdk.Stack {
     auctionResource.addMethod("POST", createAuctionIntegration);
 
     const auctionsTable = new ddb.Table(this, "AuctionsTable", {
-      tableName: "AuctionStack-AuctionsTable",
+      tableName: `${this.projectPrefix}-AuctionsTable`,
       partitionKey: {
         name: "id",
         type: ddb.AttributeType.STRING,

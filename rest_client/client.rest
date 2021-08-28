@@ -1,4 +1,4 @@
-@apiendpoint=https://7lqu8o9irf.execute-api.ap-northeast-2.amazonaws.com/prod
+@apiendpoint=https://62yyzoaxkj.execute-api.ap-northeast-2.amazonaws.com/prod/
 
 POST {{apiendpoint}}/auction
 Content-Type: application/json

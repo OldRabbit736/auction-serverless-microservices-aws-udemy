@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import "source-map-support/register";
 import * as cdk from "@aws-cdk/core";
-import { AuctionStack } from "./stacks/auction-stack";
-import { getConfig } from "./helper/get-config";
+import { AuctionServiceStack } from "./stacks/auction-service-stack";
+import { loadConfig } from "../config/util/config-handler";
 
-// const filepath = getConfig();
-// console.log(filepath);
+const { prefix, config } = loadConfig();
 
 const app = new cdk.App();
-new AuctionStack(app, "AuctionStack", {});
+new AuctionServiceStack(app, prefix, config.Stack.AuctionService);
