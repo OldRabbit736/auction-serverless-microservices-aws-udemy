@@ -37,6 +37,17 @@ export class AuctionServiceStack extends base.BaseStack {
       }
     );
 
+    const getAuctionLambda = new nodelambda.NodejsFunction(
+      this,
+      "get-auction",
+      {
+        entry: "codes/lambda/src/getAuction.ts",
+        handler: "handler",
+        memorySize: 128,
+        timeout: cdk.Duration.minutes(2),
+      }
+    );
+
     const restApi = new apigw.RestApi(this, "Api", {
       restApiName: `${projectPrefix}-${stackConfig.ApiGateWayName}`,
       endpointTypes: [apigw.EndpointType.REGIONAL],
@@ -54,6 +65,10 @@ export class AuctionServiceStack extends base.BaseStack {
     );
     auctionsResource.addMethod("GET", getAuctionsIntegration);
 
+    const auction = auctionResource.addResource("{id}");
+    const getAuctionIntegration = new apigw.LambdaIntegration(getAuctionLambda);
+    auction.addMethod("GET", getAuctionIntegration);
+
     const auctionsTable = new ddb.Table(this, "AuctionsTable", {
       tableName: `${projectPrefix}-${stackConfig.TableName}`,
       partitionKey: {
@@ -61,15 +76,23 @@ export class AuctionServiceStack extends base.BaseStack {
         type: ddb.AttributeType.STRING,
       },
     });
+
     createAuctionLambda.addEnvironment(
       "AUCTIONS_TABLE_NAME",
       auctionsTable.tableName
     );
     auctionsTable.grantWriteData(createAuctionLambda);
+
     getAuctionsLambda.addEnvironment(
       "AUCTIONS_TABLE_NAME",
       auctionsTable.tableName
     );
     auctionsTable.grantReadData(getAuctionsLambda);
+
+    getAuctionLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantReadData(getAuctionLambda);
   }
 }

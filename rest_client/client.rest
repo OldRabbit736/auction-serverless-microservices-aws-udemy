@@ -11,3 +11,8 @@ Content-Type: application/json
 
 GET {{apiendpoint}}/auctions
 Content-Type: application/json
+
+###
+
+GET {{apiendpoint}}/auction/ecfbccb0-801f-4e73-942c-2bc4d2e09d4
+Content-Type: application/json
