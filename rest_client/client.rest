@@ -6,3 +6,8 @@ Content-Type: application/json
 {
     "title": "Super nice car"
 }
+
+###
+
+GET {{apiendpoint}}/auctions
+Content-Type: application/json
