@@ -2,7 +2,7 @@ import { v4 as uuid } from "uuid";
 import {
   CreateAuction,
   CreateAuctionCommand,
-} from "./../port/in/createAuction.UseCase";
+} from "../port/in/createAuction.UseCase";
 
 import * as AWS from "aws-sdk";
 import { Auction } from "../../domain/Auction";
