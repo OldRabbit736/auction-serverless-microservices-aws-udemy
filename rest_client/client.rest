@@ -4,7 +4,7 @@ POST {{apiendpoint}}/auction
 Content-Type: application/json
 
 {
-    "title": "Super nice car"
+    "title": "Galaxy S8"
 }
 
 ###
@@ -14,5 +14,14 @@ Content-Type: application/json
 
 ###
 
-GET {{apiendpoint}}/auction/ecfbccb0-801f-4e73-942c-2bc4d2e09d4
+GET {{apiendpoint}}/auction/dbe3fec9-6699-4c22-8315-a751b4c466ed
 Content-Type: application/json
+
+###
+
+PATCH {{apiendpoint}}/auction/5e225e20-fa29-4cb6-abea-62e376e21e41/bid
+Content-Type: application/json
+
+{
+    "amount": 70
+}

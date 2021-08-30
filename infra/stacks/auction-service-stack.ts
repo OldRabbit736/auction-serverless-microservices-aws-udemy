@@ -48,26 +48,41 @@ export class AuctionServiceStack extends base.BaseStack {
       }
     );
 
+    const placeBidLambda = new nodelambda.NodejsFunction(this, "place-bid", {
+      entry: "codes/lambda/src/placeBid.ts",
+      handler: "handler",
+      memorySize: 128,
+      timeout: cdk.Duration.minutes(2),
+    });
+
     const restApi = new apigw.RestApi(this, "Api", {
       restApiName: `${projectPrefix}-${stackConfig.ApiGateWayName}`,
       endpointTypes: [apigw.EndpointType.REGIONAL],
     });
 
+    // POST auction
     const auctionResource = restApi.root.addResource("auction");
     const createAuctionIntegration = new apigw.LambdaIntegration(
       createAuctionLambda
     );
     auctionResource.addMethod("POST", createAuctionIntegration);
 
+    // GET auctions
     const auctionsResource = restApi.root.addResource("auctions");
     const getAuctionsIntegration = new apigw.LambdaIntegration(
       getAuctionsLambda
     );
     auctionsResource.addMethod("GET", getAuctionsIntegration);
 
-    const auction = auctionResource.addResource("{id}");
+    // GET auction/{id}
+    const auctionIdResource = auctionResource.addResource("{id}");
     const getAuctionIntegration = new apigw.LambdaIntegration(getAuctionLambda);
-    auction.addMethod("GET", getAuctionIntegration);
+    auctionIdResource.addMethod("GET", getAuctionIntegration);
+
+    // PATCH auction/{id}/bid
+    const bidResource = auctionIdResource.addResource("bid");
+    const placeBidIntegration = new apigw.LambdaIntegration(placeBidLambda);
+    bidResource.addMethod("PATCH", placeBidIntegration);
 
     const auctionsTable = new ddb.Table(this, "AuctionsTable", {
       tableName: `${projectPrefix}-${stackConfig.TableName}`,
@@ -94,5 +109,11 @@ export class AuctionServiceStack extends base.BaseStack {
       auctionsTable.tableName
     );
     auctionsTable.grantReadData(getAuctionLambda);
+
+    placeBidLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantWriteData(placeBidLambda);
   }
 }
