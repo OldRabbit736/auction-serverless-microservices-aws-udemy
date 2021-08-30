@@ -11,6 +11,7 @@ const createAuction = async (event: any, context: any) => {
   const command: CreateAuctionCommand = {
     title,
   };
+  // TODO: How to call UseCase instead of Service?
   const result = await createAuctionService(command);
 
   return pipe(
