@@ -4,6 +4,7 @@ import { CreateAuctionCommand } from "../../../application/port/in/createAuction
 import { createAuctionService } from "../../../application/service/createAuction.Service";
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
+import { createAuctionPortImpl } from "../../out/persistence/AuctoinPersistenceAdapter";
 
 const createAuction = async (event: any, context: any) => {
   const { title } = event.body;
@@ -11,8 +12,9 @@ const createAuction = async (event: any, context: any) => {
   const command: CreateAuctionCommand = {
     title,
   };
-  // TODO: How to call UseCase instead of Service?
-  const result = await createAuctionService(command);
+
+  // dependency injection (createAuctionPortImpl)
+  const result = await createAuctionService(createAuctionPortImpl)(command);
 
   return pipe(
     result,
