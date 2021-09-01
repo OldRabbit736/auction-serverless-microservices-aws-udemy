@@ -14,14 +14,14 @@ Content-Type: application/json
 
 ###
 
-GET {{apiendpoint}}/auction/dbe3fec9-6699-4c22-8315-a751b4c466ed
+GET {{apiendpoint}}/auction/5e225e20-fa29-4cb6-abea-62e376e21e41
 Content-Type: application/json
 
 ###
 
-PATCH {{apiendpoint}}/auction/5e225e20-fa29-4cb6-abea-62e376e21e41/bid
+PATCH {{apiendpoint}}/auction/74f78644-f7c5-485d-b4d9-bc3c1faa271d/bid
 Content-Type: application/json
 
 {
-    "amount": 70
+    "amount": 81
 }

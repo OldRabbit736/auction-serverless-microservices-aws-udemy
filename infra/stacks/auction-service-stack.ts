@@ -115,6 +115,6 @@ export class AuctionServiceStack extends base.BaseStack {
       "AUCTIONS_TABLE_NAME",
       auctionsTable.tableName
     );
-    auctionsTable.grantWriteData(placeBidLambda);
+    auctionsTable.grantReadWriteData(placeBidLambda);
   }
 }

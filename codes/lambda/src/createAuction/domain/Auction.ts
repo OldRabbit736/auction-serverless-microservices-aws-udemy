@@ -1,3 +1,4 @@
+// TODO: define domain objects for the fields
 export type Auction = {
   id: string;
   title: string;
