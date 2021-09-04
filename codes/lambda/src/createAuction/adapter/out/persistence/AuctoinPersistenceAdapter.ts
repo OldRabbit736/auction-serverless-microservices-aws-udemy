@@ -43,6 +43,7 @@ export const getAuctionByIdPortImpl: GetAuctionByIdPort = async (
     auction = result.Item;
   } catch (error) {
     console.error(error);
+    // TODO: to throw or return http error
     return {
       _tag: "Left",
       left: "Internal Server Error",
@@ -50,6 +51,7 @@ export const getAuctionByIdPortImpl: GetAuctionByIdPort = async (
   }
 
   if (!auction) {
+    // TODO: to throw or return http error
     return {
       _tag: "Left",
       left: `Auction with ID "${id}" not found!`,

@@ -4,7 +4,7 @@ POST {{apiendpoint}}/auction
 Content-Type: application/json
 
 {
-    "title": "Apple Macbook pro 16"
+    "title": "Apple Macbook pro 14"
 }
 
 ###
