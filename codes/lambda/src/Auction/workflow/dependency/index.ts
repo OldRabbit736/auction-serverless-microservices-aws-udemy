@@ -18,3 +18,5 @@ export type NoAuctionFound = {
 export type PlaceBidPort = (
   id: string
 ) => (amount: number) => Promise<E.Either<InfraError, Auction>>;
+
+export type GetAuctionsPort = () => Promise<E.Either<InfraError, Auction[]>>;
