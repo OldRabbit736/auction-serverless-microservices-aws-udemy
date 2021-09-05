@@ -16,8 +16,8 @@ const createAuction = async (event: any, context: any) => {
   return pipe(
     result,
     E.fold(
-      (errormessage) => {
-        throw new createError.InternalServerError(errormessage);
+      (error) => {
+        throw new createError.InternalServerError(error.message);
       },
       (auction) => {
         return {

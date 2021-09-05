@@ -16,8 +16,11 @@ const getAuction = async (event: any, context: any) => {
   return pipe(
     result,
     E.fold(
-      (errormessage) => {
-        throw new createError.InternalServerError(errormessage);
+      (error) => {
+        if (error._tag === "infra error") {
+          throw new createError.InternalServerError(error.message);
+        }
+        throw new createError.NotFound(error.message);
       },
       (auction) => {
         return {

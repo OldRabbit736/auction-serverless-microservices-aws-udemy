@@ -1,4 +1,3 @@
-import * as E from "fp-ts/lib/Either";
 import * as AWS from "aws-sdk";
 import { Auction } from "../domain/Auction";
 import { CreateAuctionPort } from "../workflow/create-auction.workflow";
@@ -7,7 +6,7 @@ const ddbClient = new AWS.DynamoDB.DocumentClient();
 
 export const createAuctionPort: CreateAuctionPort = async (
   auction: Auction
-): Promise<E.Either<string, Auction>> => {
+) => {
   try {
     await ddbClient
       .put({
@@ -23,7 +22,10 @@ export const createAuctionPort: CreateAuctionPort = async (
     console.error(error);
     return {
       _tag: "Left",
-      left: error.message as string,
+      left: {
+        _tag: "infra error",
+        message: error.message as string,
+      },
     };
   }
 };
