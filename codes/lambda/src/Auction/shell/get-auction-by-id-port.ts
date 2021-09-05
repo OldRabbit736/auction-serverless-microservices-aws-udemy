@@ -1,4 +1,4 @@
-import { GetAuctionByIdPort } from "../workflow/get-auction-by-id.workflow";
+import { GetAuctionByIdPort } from "../workflow/dependency";
 
 import * as AWS from "aws-sdk";
 const ddbClient = new AWS.DynamoDB.DocumentClient();

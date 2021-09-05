@@ -8,3 +8,7 @@ export type Auction = {
     amount: number;
   };
 };
+
+export const isBiddable = (auction: Auction) => (amount: number) => {
+  return auction.highestBid.amount < amount;
+};

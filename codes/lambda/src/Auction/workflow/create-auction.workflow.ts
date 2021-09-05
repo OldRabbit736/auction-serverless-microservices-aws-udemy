@@ -1,11 +1,6 @@
-import * as E from "fp-ts/lib/Either";
 import { v4 as uuid } from "uuid";
 import { Auction } from "../domain/Auction";
-import { InfraError } from "../errors";
-
-export type CreateAuctionPort = (
-  auction: Auction
-) => Promise<E.Either<InfraError, Auction>>;
+import { CreateAuctionPort } from "./dependency";
 
 export const createAuctionWorkflow =
   (createAuctionPort: CreateAuctionPort) => async (title: string) => {

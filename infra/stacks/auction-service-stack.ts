@@ -49,7 +49,7 @@ export class AuctionServiceStack extends base.BaseStack {
     );
 
     const placeBidLambda = new nodelambda.NodejsFunction(this, "place-bid", {
-      entry: "codes/lambda/src/placeBid.ts",
+      entry: "codes/lambda/src/Auction/place-bid.controller.ts",
       handler: "handler",
       memorySize: 128,
       timeout: cdk.Duration.minutes(2),

@@ -1,6 +1,6 @@
 import * as AWS from "aws-sdk";
 import { Auction } from "../domain/Auction";
-import { CreateAuctionPort } from "../workflow/create-auction.workflow";
+import { CreateAuctionPort } from "../workflow/dependency";
 
 const ddbClient = new AWS.DynamoDB.DocumentClient();
 
