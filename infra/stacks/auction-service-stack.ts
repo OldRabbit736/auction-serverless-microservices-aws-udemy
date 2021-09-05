@@ -3,6 +3,8 @@ import * as cdk from "@aws-cdk/core";
 import * as nodelambda from "@aws-cdk/aws-lambda-nodejs";
 import * as apigw from "@aws-cdk/aws-apigateway";
 import * as ddb from "@aws-cdk/aws-dynamodb";
+import * as event from "@aws-cdk/aws-events";
+import * as eventTargets from "@aws-cdk/aws-events-targets";
 
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
@@ -115,5 +117,22 @@ export class AuctionServiceStack extends base.BaseStack {
       auctionsTable.tableName
     );
     auctionsTable.grantReadWriteData(placeBidLambda);
+
+    const processAuctionsLambda = new nodelambda.NodejsFunction(
+      this,
+      "process-auctions",
+      {
+        entry: "codes/lambda/src/Auction/process-auctions.controller.ts",
+        handler: "handler",
+        memorySize: 128,
+        timeout: cdk.Duration.minutes(2),
+      }
+    );
+
+    const rule = new event.Rule(this, "ScheduleRule", {
+      schedule: event.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    rule.addTarget(new eventTargets.LambdaFunction(processAuctionsLambda));
   }
 }

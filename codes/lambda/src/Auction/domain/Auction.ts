@@ -1,4 +1,5 @@
 // TODO: define domain objects for the fields
+// TODO: define smart constructor
 export type Auction = {
   id: string;
   title: string;
