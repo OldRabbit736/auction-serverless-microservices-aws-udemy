@@ -94,6 +94,19 @@ export class AuctionServiceStack extends base.BaseStack {
       },
     });
 
+    auctionsTable.addGlobalSecondaryIndex({
+      partitionKey: {
+        name: "status",
+        type: ddb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "endingAt",
+        type: ddb.AttributeType.STRING,
+      },
+      projectionType: ddb.ProjectionType.ALL,
+      indexName: "statusAndEndDate",
+    });
+
     createAuctionLambda.addEnvironment(
       "AUCTIONS_TABLE_NAME",
       auctionsTable.tableName
@@ -129,10 +142,16 @@ export class AuctionServiceStack extends base.BaseStack {
       }
     );
 
-    const rule = new event.Rule(this, "ScheduleRule", {
-      schedule: event.Schedule.rate(cdk.Duration.minutes(1)),
-    });
+    // const rule = new event.Rule(this, "ScheduleRule", {
+    //   schedule: event.Schedule.rate(cdk.Duration.minutes(1)),
+    // });
 
-    rule.addTarget(new eventTargets.LambdaFunction(processAuctionsLambda));
+    // rule.addTarget(new eventTargets.LambdaFunction(processAuctionsLambda));
+
+    processAuctionsLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantReadData(processAuctionsLambda);
   }
 }

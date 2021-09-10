@@ -5,6 +5,7 @@ export type Auction = {
   title: string;
   status: "OPEN";
   createdAt: string;
+  endingAt: string;
   highestBid: {
     amount: number;
   };
