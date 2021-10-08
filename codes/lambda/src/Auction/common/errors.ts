@@ -11,6 +11,7 @@ export type ServerError = {
 
 export type NotFoundError = {
   readonly type: "NotFoundError";
+  readonly message?: string;
 };
 
 export type Errors = ClientError | ServerError | NotFoundError;
@@ -26,6 +27,13 @@ export const clientError = (message: string): ClientError => {
 export const serverError = (message: string): ServerError => {
   return {
     type: "ServerError",
+    message,
+  };
+};
+
+export const notFound = (message?: string): NotFoundError => {
+  return {
+    type: "NotFoundError",
     message,
   };
 };

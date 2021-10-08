@@ -14,7 +14,7 @@ export const handleError = (err: Errors): Response => {
     }
 
     case "NotFoundError": {
-      return notFoundResponse();
+      return notFoundResponse(err.message);
     }
 
     case "ServerError": {
@@ -39,8 +39,9 @@ export const badRequestResponse = (body?: string): Response => ({
   body,
 });
 
-export const notFoundResponse = (): Response => ({
+export const notFoundResponse = (body?: string): Response => ({
   statusCode: 404,
+  body,
 });
 
 export const internalServerErrorResponse = (body?: string): Response => ({

@@ -14,7 +14,7 @@ Content-Type: application/json
 
 ###
 
-GET {{apiendpoint}}/auction/5e225e20-fa29-4cb6-abea-62e376e21e41
+GET {{apiendpoint}}/auction/219ee2dd-b22c-464a-8f1d-7a9e3f2cd5e9
 Content-Type: application/json
 
 ###
