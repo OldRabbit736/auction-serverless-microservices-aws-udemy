@@ -37,6 +37,10 @@ export const makeAuction =
       return E.left(clientError("end date must be later than start date"));
     }
 
+    if (title.length === 0) {
+      return E.left(clientError("Title should be long enough"));
+    }
+
     const a: AuctionProps = {
       id: uuid(),
       title,

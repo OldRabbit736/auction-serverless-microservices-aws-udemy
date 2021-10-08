@@ -13,12 +13,14 @@ const makeDates = () => {
   return { startDate: now, endDate: endDate };
 };
 
+const getTitle = (request: CreateAuctionRequest) => request.title;
+
 export const workflow =
   (createAuctionPort: CreateAuctionPort) =>
   (createAuctionRequest: CreateAuctionRequest) => {
     return pipe(
       makeDates(),
-      makeAuction(createAuctionRequest.title),
+      makeAuction(getTitle(createAuctionRequest)),
       TE.fromEither,
       TE.chain((auction) => () => createAuctionPort(auction))
     );

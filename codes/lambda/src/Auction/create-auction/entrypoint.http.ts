@@ -6,8 +6,9 @@ import { createAuctionPortImplAWS } from "./implementation/aws";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as T from "fp-ts/lib/Task";
+import commonMiddleware from "../../lib/commonMiddleware";
 
-export const handler = (event: any): Promise<Response> =>
+export const createAuction = (event: any): Promise<Response> =>
   pipe(
     prepareRequest(event),
     TE.fromEither,
@@ -16,6 +17,10 @@ export const handler = (event: any): Promise<Response> =>
     TE.bimap(handleError, createdResponse),
     TE.getOrElse(T.of)
   )();
+
+const handler = commonMiddleware(createAuction);
+
+export { handler };
 
 // http related stuff + spin workflow
 

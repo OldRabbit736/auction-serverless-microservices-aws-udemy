@@ -19,7 +19,7 @@ export const handleError = (err: Errors): Response => {
 
     case "ServerError": {
       console.warn(err.message);
-      return internalServerErrorResponse();
+      return internalServerErrorResponse(err.message);
     }
   }
 };
@@ -34,16 +34,16 @@ export const createdResponse = (body?: string): Response => ({
   body,
 });
 
-export const badRequestResponse = (message: string): Response => ({
+export const badRequestResponse = (body?: string): Response => ({
   statusCode: 400,
-  body: message,
+  body,
 });
 
 export const notFoundResponse = (): Response => ({
   statusCode: 404,
 });
 
-export const internalServerErrorResponse = (): Response => ({
+export const internalServerErrorResponse = (body?: string): Response => ({
   statusCode: 500,
-  body: "Internal Server Error",
+  body: body ? body : "Internal Server Error",
 });

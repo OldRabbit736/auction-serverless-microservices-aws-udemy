@@ -4,7 +4,7 @@ POST {{apiendpoint}}/auction
 Content-Type: application/json
 
 {
-    "title": "Computer"
+    "title": "mac mini"
 }
 
 ###
