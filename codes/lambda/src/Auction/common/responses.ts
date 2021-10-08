@@ -1,0 +1,49 @@
+import { Errors } from "./errors";
+
+/* Types */
+export type Response = {
+  readonly statusCode: number;
+  readonly body?: string;
+};
+
+/* Makers */
+export const handleError = (err: Errors): Response => {
+  switch (err.type) {
+    case "ClientError": {
+      return badRequestResponse(err.message);
+    }
+
+    case "NotFoundError": {
+      return notFoundResponse();
+    }
+
+    case "ServerError": {
+      console.warn(err.message);
+      return internalServerErrorResponse();
+    }
+  }
+};
+
+export const okResponse = (body: string): Response => ({
+  statusCode: 200,
+  body,
+});
+
+export const createdResponse = (body?: string): Response => ({
+  statusCode: 201,
+  body,
+});
+
+export const badRequestResponse = (message: string): Response => ({
+  statusCode: 400,
+  body: message,
+});
+
+export const notFoundResponse = (): Response => ({
+  statusCode: 404,
+});
+
+export const internalServerErrorResponse = (): Response => ({
+  statusCode: 500,
+  body: "Internal Server Error",
+});
