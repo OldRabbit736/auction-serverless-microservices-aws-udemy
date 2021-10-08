@@ -8,7 +8,7 @@ import * as TE from "fp-ts/lib/TaskEither";
 import * as T from "fp-ts/lib/Task";
 import commonMiddleware from "../../lib/commonMiddleware";
 
-export const createAuction = (event: any): Promise<Response> =>
+const createAuction = (event: any): Promise<Response> =>
   pipe(
     prepareRequest(event),
     TE.fromEither,
