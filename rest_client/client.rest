@@ -19,7 +19,7 @@ Content-Type: application/json
 
 ###
 
-PATCH {{apiendpoint}}/auction/61b191ce-7e5b-4cc3-ba51-e0a4ae7dd117/bid
+PATCH {{apiendpoint}}/auction/91620779-9a2a-4633-aab1-152fd707b357/bid
 Content-Type: application/json
 
 {

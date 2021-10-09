@@ -1,3 +1,4 @@
+import { pipe } from "fp-ts/lib/function";
 import { clientError, Errors, serverError } from "./errors";
 
 import { v4 as uuid } from "uuid";
@@ -25,12 +26,27 @@ const alwaysPass = (a: AuctionProps): a is Auction => {
   return true;
 };
 
-export const isBiddable = (amount: number) => (auction: Auction) =>
-  auction.highestBid.amount < amount
-    ? E.right(auction)
-    : E.left(
-        clientError(`Your bid must be higher than ${auction.highestBid.amount}`)
-      );
+export const isBiddable = (amount: number) => (auction: Auction) => {
+  const isAmountHigher = (amount: number) => (auction: Auction) =>
+    auction.highestBid.amount < amount
+      ? E.right(auction)
+      : E.left(
+          clientError(
+            `Your bid must be higher than ${auction.highestBid.amount}`
+          )
+        );
+
+  const isAuctionNotClosed = (auction: Auction) =>
+    auction.status === "OPEN"
+      ? E.right(auction)
+      : E.left(
+          clientError(
+            `You cannot place bid on not open auction: "${auction.title}"`
+          )
+        );
+
+  return pipe(isAuctionNotClosed(auction), E.chain(isAmountHigher(amount)));
+};
 
 export const makeAuction =
   (title: string) =>
