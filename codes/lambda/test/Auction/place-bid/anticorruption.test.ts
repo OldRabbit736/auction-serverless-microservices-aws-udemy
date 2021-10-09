@@ -47,6 +47,8 @@ describe("place-bid parseEvent", () => {
 
     const result = prepareRequest(event);
 
-    expect(result).toEqual(E.left(clientError("Id must be given!!")));
+    expect(result).toEqual(
+      E.left(clientError("Id must be given!!, Amount must be given!!"))
+    );
   });
 });
