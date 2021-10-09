@@ -24,7 +24,7 @@ export { handler };
 
 // http related stuff + spin workflow
 
-// http request(event) -> json
+// http request(event) -> json (done by middleware)
 // json deserialize (parse) -> unvalidated something (domain object)
 
 // workflow setting
