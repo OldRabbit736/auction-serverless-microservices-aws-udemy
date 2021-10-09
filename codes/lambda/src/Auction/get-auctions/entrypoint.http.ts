@@ -6,11 +6,13 @@ import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as T from "fp-ts/lib/Task";
 import commonMiddleware from "../../lib/commonMiddleware";
+import { prepareRequest } from "./anticorruption";
 
 const getAuctions = (event: any): Promise<Response> =>
   pipe(
-    // no anticorruption layer
-    workflow(getAuctionsPortImplAWS),
+    prepareRequest(event),
+    TE.fromEither,
+    TE.chain(workflow(getAuctionsPortImplAWS)),
     TE.map(JSON.stringify),
     TE.bimap(handleError, okResponse),
     TE.getOrElse(T.of)

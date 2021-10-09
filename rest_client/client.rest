@@ -4,12 +4,12 @@ POST {{apiendpoint}}/auction
 Content-Type: application/json
 
 {
-    "title": "GENELEC Speaker"
+    "title": "Kindle E-book Reader"
 }
 
 ###
 
-GET {{apiendpoint}}/auctions
+GET {{apiendpoint}}/auctions?status=CLOSED
 Content-Type: application/json
 
 ###
