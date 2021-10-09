@@ -38,12 +38,12 @@ export class AuctionServiceStack extends base.BaseStack {
       indexName: "statusAndEndDate",
     });
 
+    /************* Lambda *************/
     const createAuctionLambda = new nodelambda.NodejsFunction(
       this,
       "create-auction",
       {
         entry: "codes/lambda/src/Auction/create-auction/entrypoint.http.ts",
-        // entry: "codes/lambda/src/Auction/create-auction.controller.ts",
         handler: "handler",
         memorySize: 128,
         timeout: cdk.Duration.minutes(2),
@@ -61,7 +61,6 @@ export class AuctionServiceStack extends base.BaseStack {
       "get-auctions",
       {
         entry: "codes/lambda/src/Auction/get-auctions/entrypoint.http.ts",
-        // entry: "codes/lambda/src/Auction/get-auctions.controller.ts",
         handler: "handler",
         memorySize: 128,
         timeout: cdk.Duration.minutes(2),
@@ -79,7 +78,6 @@ export class AuctionServiceStack extends base.BaseStack {
       "get-auction",
       {
         entry: "codes/lambda/src/Auction/get-auction-by-id/entrypoint.http.ts",
-        // entry: "codes/lambda/src/Auction/get-auction.controller.ts",
         handler: "handler",
         memorySize: 128,
         timeout: cdk.Duration.minutes(2),
@@ -94,7 +92,6 @@ export class AuctionServiceStack extends base.BaseStack {
 
     const placeBidLambda = new nodelambda.NodejsFunction(this, "place-bid", {
       entry: "codes/lambda/src/Auction/place-bid/entrypoint.http.ts",
-      // entry: "codes/lambda/src/Auction/place-bid.controller.ts",
       handler: "handler",
       memorySize: 128,
       timeout: cdk.Duration.minutes(2),
@@ -106,6 +103,30 @@ export class AuctionServiceStack extends base.BaseStack {
     );
     auctionsTable.grantReadWriteData(placeBidLambda);
 
+    const processAuctionsLambda = new nodelambda.NodejsFunction(
+      this,
+      "process-auctions",
+      {
+        entry: "codes/lambda/src/Auction/process-auctions/entrypoint.http.ts",
+        handler: "handler",
+        memorySize: 128,
+        timeout: cdk.Duration.minutes(2),
+      }
+    );
+
+    processAuctionsLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantReadData(processAuctionsLambda);
+
+    // const rule = new event.Rule(this, "ScheduleRule", {
+    //   schedule: event.Schedule.rate(cdk.Duration.minutes(1)),
+    // });
+
+    // rule.addTarget(new eventTargets.LambdaFunction(processAuctionsLambda));
+
+    /************* REST API *************/
     const restApi = new apigw.RestApi(this, "Api", {
       restApiName: `${projectPrefix}-${stackConfig.ApiGateWayName}`,
       endpointTypes: [apigw.EndpointType.REGIONAL],
@@ -134,28 +155,5 @@ export class AuctionServiceStack extends base.BaseStack {
     const bidResource = auctionIdResource.addResource("bid");
     const placeBidIntegration = new apigw.LambdaIntegration(placeBidLambda);
     bidResource.addMethod("PATCH", placeBidIntegration);
-
-    // const processAuctionsLambda = new nodelambda.NodejsFunction(
-    //   this,
-    //   "process-auctions",
-    //   {
-    //     entry: "codes/lambda/src/Auction/process-auctions.controller.ts",
-    //     handler: "handler",
-    //     memorySize: 128,
-    //     timeout: cdk.Duration.minutes(2),
-    //   }
-    // );
-
-    // const rule = new event.Rule(this, "ScheduleRule", {
-    //   schedule: event.Schedule.rate(cdk.Duration.minutes(1)),
-    // });
-
-    // rule.addTarget(new eventTargets.LambdaFunction(processAuctionsLambda));
-
-    // processAuctionsLambda.addEnvironment(
-    //   "AUCTIONS_TABLE_NAME",
-    //   auctionsTable.tableName
-    // );
-    // auctionsTable.grantReadData(processAuctionsLambda);
   }
 }
