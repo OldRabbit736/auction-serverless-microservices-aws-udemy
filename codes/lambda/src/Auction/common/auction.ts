@@ -2,6 +2,7 @@ import { clientError, Errors, serverError } from "./errors";
 
 import { v4 as uuid } from "uuid";
 import * as E from "fp-ts/lib/Either";
+import { none, some } from "fp-ts/lib/Option";
 
 type AuctionProps = {
   id: string;
@@ -23,6 +24,13 @@ export type Auction = AuctionProps & AuctionBrand;
 const alwaysPass = (a: AuctionProps): a is Auction => {
   return true;
 };
+
+export const isBiddable = (amount: number) => (auction: Auction) =>
+  auction.highestBid.amount < amount
+    ? E.right(auction)
+    : E.left(
+        clientError(`Your bid must be higher than ${auction.highestBid.amount}`)
+      );
 
 export const makeAuction =
   (title: string) =>

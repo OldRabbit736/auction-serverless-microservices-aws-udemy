@@ -14,7 +14,12 @@ export type NotFoundError = {
   readonly message?: string;
 };
 
-export type Errors = ClientError | ServerError | NotFoundError;
+export type Forbidden = {
+  readonly type: "Forbidden";
+  readonly message?: string;
+};
+
+export type Errors = ClientError | ServerError | NotFoundError | Forbidden;
 
 /* Makers */
 export const clientError = (message: string): ClientError => {
@@ -34,6 +39,13 @@ export const serverError = (message: string): ServerError => {
 export const notFound = (message?: string): NotFoundError => {
   return {
     type: "NotFoundError",
+    message,
+  };
+};
+
+export const Forbidden = (message?: string): Forbidden => {
+  return {
+    type: "Forbidden",
     message,
   };
 };

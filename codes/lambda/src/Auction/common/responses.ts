@@ -8,6 +8,10 @@ export type Response = {
 
 /* Makers */
 export const handleError = (err: Errors): Response => {
+  function assertUnreachable(x: never): never {
+    throw new Error("Didn't expect to get here");
+  }
+
   switch (err.type) {
     case "ClientError": {
       return badRequestResponse(err.message);
@@ -21,7 +25,13 @@ export const handleError = (err: Errors): Response => {
       console.warn(err.message);
       return internalServerErrorResponse(err.message);
     }
+
+    case "Forbidden": {
+      return forbiddenResponse(err.message);
+    }
   }
+
+  return assertUnreachable(err);
 };
 
 export const okResponse = (body: string): Response => ({
@@ -36,6 +46,11 @@ export const createdResponse = (body?: string): Response => ({
 
 export const badRequestResponse = (body?: string): Response => ({
   statusCode: 400,
+  body,
+});
+
+export const forbiddenResponse = (body?: string): Response => ({
+  statusCode: 403,
   body,
 });
 

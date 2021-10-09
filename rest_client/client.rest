@@ -19,9 +19,9 @@ Content-Type: application/json
 
 ###
 
-PATCH {{apiendpoint}}/auction/2262af8b-bc38-4c8a-b00f-5db04fa7e748/bid
+PATCH {{apiendpoint}}/auction/219ee2dd-b22c-464a-8f1d-7a9e3f2cd5e9/bid
 Content-Type: application/json
 
 {
-    "amount": 83
+    "amount": 2
 }
