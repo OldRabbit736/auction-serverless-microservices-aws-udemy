@@ -14,11 +14,11 @@ import * as T from "fp-ts/lib/Task";
 const processAuctions = async (event: any) => {
   return pipe(
     () => getEndedAuctionsPortImplAWS(),
-    TE.chainW((items) =>
-      items.length === 0
-        ? TE.left(notFound("No Auctions Found"))
-        : TE.right(items)
-    ),
+    // TE.chainW((items) =>
+    //   items.length === 0
+    //     ? TE.left(notFound("No Auctions Found"))
+    //     : TE.right(items)
+    // ),
     TE.map((items) => items.map((item) => item.id as string)),
     TE.chain((auctionIds) => {
       return A.sequence(TE.ApplicativePar)(
