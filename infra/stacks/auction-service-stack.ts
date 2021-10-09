@@ -118,7 +118,7 @@ export class AuctionServiceStack extends base.BaseStack {
       "AUCTIONS_TABLE_NAME",
       auctionsTable.tableName
     );
-    auctionsTable.grantReadData(processAuctionsLambda);
+    auctionsTable.grantReadWriteData(processAuctionsLambda);
 
     // const rule = new event.Rule(this, "ScheduleRule", {
     //   schedule: event.Schedule.rate(cdk.Duration.minutes(1)),
