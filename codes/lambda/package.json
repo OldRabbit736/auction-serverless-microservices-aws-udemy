@@ -16,6 +16,7 @@
     "aws-sdk": "^2.977.0",
     "fp-ts": "^2.11.1",
     "http-errors": "^1.8.0",
+    "io-ts": "^2.2.16",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
