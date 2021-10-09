@@ -17,6 +17,27 @@ export class AuctionServiceStack extends base.BaseStack {
   ) {
     super(scope, projectPrefix, stackConfig.Name);
 
+    const auctionsTable = new ddb.Table(this, "AuctionsTable", {
+      tableName: `${projectPrefix}-${stackConfig.TableName}`,
+      partitionKey: {
+        name: "id",
+        type: ddb.AttributeType.STRING,
+      },
+    });
+
+    auctionsTable.addGlobalSecondaryIndex({
+      partitionKey: {
+        name: "status",
+        type: ddb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "endingAt",
+        type: ddb.AttributeType.STRING,
+      },
+      projectionType: ddb.ProjectionType.ALL,
+      indexName: "statusAndEndDate",
+    });
+
     const createAuctionLambda = new nodelambda.NodejsFunction(
       this,
       "create-auction",
@@ -28,6 +49,12 @@ export class AuctionServiceStack extends base.BaseStack {
         timeout: cdk.Duration.minutes(2),
       }
     );
+
+    createAuctionLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantWriteData(createAuctionLambda);
 
     const getAuctionsLambda = new nodelambda.NodejsFunction(
       this,
@@ -41,6 +68,12 @@ export class AuctionServiceStack extends base.BaseStack {
       }
     );
 
+    getAuctionsLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantReadData(getAuctionsLambda);
+
     const getAuctionLambda = new nodelambda.NodejsFunction(
       this,
       "get-auction",
@@ -53,6 +86,12 @@ export class AuctionServiceStack extends base.BaseStack {
       }
     );
 
+    getAuctionLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantReadData(getAuctionLambda);
+
     const placeBidLambda = new nodelambda.NodejsFunction(this, "place-bid", {
       entry: "codes/lambda/src/Auction/place-bid/entrypoint.http.ts",
       // entry: "codes/lambda/src/Auction/place-bid.controller.ts",
@@ -60,6 +99,12 @@ export class AuctionServiceStack extends base.BaseStack {
       memorySize: 128,
       timeout: cdk.Duration.minutes(2),
     });
+
+    placeBidLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
+    );
+    auctionsTable.grantReadWriteData(placeBidLambda);
 
     const restApi = new apigw.RestApi(this, "Api", {
       restApiName: `${projectPrefix}-${stackConfig.ApiGateWayName}`,
@@ -89,51 +134,6 @@ export class AuctionServiceStack extends base.BaseStack {
     const bidResource = auctionIdResource.addResource("bid");
     const placeBidIntegration = new apigw.LambdaIntegration(placeBidLambda);
     bidResource.addMethod("PATCH", placeBidIntegration);
-
-    const auctionsTable = new ddb.Table(this, "AuctionsTable", {
-      tableName: `${projectPrefix}-${stackConfig.TableName}`,
-      partitionKey: {
-        name: "id",
-        type: ddb.AttributeType.STRING,
-      },
-    });
-
-    auctionsTable.addGlobalSecondaryIndex({
-      partitionKey: {
-        name: "status",
-        type: ddb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: "endingAt",
-        type: ddb.AttributeType.STRING,
-      },
-      projectionType: ddb.ProjectionType.ALL,
-      indexName: "statusAndEndDate",
-    });
-
-    createAuctionLambda.addEnvironment(
-      "AUCTIONS_TABLE_NAME",
-      auctionsTable.tableName
-    );
-    auctionsTable.grantWriteData(createAuctionLambda);
-
-    getAuctionsLambda.addEnvironment(
-      "AUCTIONS_TABLE_NAME",
-      auctionsTable.tableName
-    );
-    auctionsTable.grantReadData(getAuctionsLambda);
-
-    getAuctionLambda.addEnvironment(
-      "AUCTIONS_TABLE_NAME",
-      auctionsTable.tableName
-    );
-    auctionsTable.grantReadData(getAuctionLambda);
-
-    placeBidLambda.addEnvironment(
-      "AUCTIONS_TABLE_NAME",
-      auctionsTable.tableName
-    );
-    auctionsTable.grantReadWriteData(placeBidLambda);
 
     // const processAuctionsLambda = new nodelambda.NodejsFunction(
     //   this,

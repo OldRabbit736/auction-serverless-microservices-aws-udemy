@@ -4,7 +4,7 @@ POST {{apiendpoint}}/auction
 Content-Type: application/json
 
 {
-    "title": "mac mini"
+    "title": "GENELEC Speaker"
 }
 
 ###
@@ -14,12 +14,12 @@ Content-Type: application/json
 
 ###
 
-GET {{apiendpoint}}/auction/219ee2dd-b22c-464a-8f1d-7a9e3f2cd5e9
+GET {{apiendpoint}}/auction/61b191ce-7e5b-4cc3-ba51-e0a4ae7dd117
 Content-Type: application/json
 
 ###
 
-PATCH {{apiendpoint}}/auction/219ee2dd-b22c-464a-8f1d-7a9e3f2cd5e9/bid
+PATCH {{apiendpoint}}/auction/61b191ce-7e5b-4cc3-ba51-e0a4ae7dd117/bid
 Content-Type: application/json
 
 {
