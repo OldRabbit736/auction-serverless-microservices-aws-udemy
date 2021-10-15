@@ -5,6 +5,7 @@ import * as apigw from "@aws-cdk/aws-apigateway";
 import * as ddb from "@aws-cdk/aws-dynamodb";
 import * as event from "@aws-cdk/aws-events";
 import * as eventTargets from "@aws-cdk/aws-events-targets";
+import * as cognito from "@aws-cdk/aws-cognito";
 
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
@@ -125,6 +126,31 @@ export class AuctionServiceStack extends base.BaseStack {
     // });
 
     // rule.addTarget(new eventTargets.LambdaFunction(processAuctionsLambda));
+
+    /************* Cognito *************/
+    const userPool = new cognito.UserPool(this, "AuctionUserPool", {
+      signInAliases: {
+        username: true,
+        email: true,
+      },
+      // standardAttributes: {
+      //   email: {
+      //     required: true,
+      //     mutable: true,
+      //   },
+      //   fullname: {
+      //     required: true,
+      //     mutable: true,
+      //   },
+      // },
+    });
+    const client = userPool.addClient("test-client", {
+      authFlows: {
+        // userPassword: true,
+        userSrp: true,
+      },
+      preventUserExistenceErrors: true,
+    });
 
     /************* REST API *************/
     const restApi = new apigw.RestApi(this, "Api", {

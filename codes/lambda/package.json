@@ -4,7 +4,7 @@
   "description": "",
   "main": "createAuction.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "token": "npx ts-node src/Auction/auth/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +13,7 @@
     "@middy/http-error-handler": "^2.5.1",
     "@middy/http-event-normalizer": "^2.5.1",
     "@middy/http-json-body-parser": "^2.5.1",
+    "aws-amplify": "^4.3.2",
     "aws-sdk": "^2.977.0",
     "fp-ts": "^2.11.1",
     "http-errors": "^1.8.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/http-errors": "^1.8.1",
-    "@types/uuid": "^8.3.1"
+    "@types/uuid": "^8.3.1",
+    "ts-node": "^10.3.0"
   }
 }
