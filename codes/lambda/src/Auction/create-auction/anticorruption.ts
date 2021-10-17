@@ -28,26 +28,24 @@ import * as A from "fp-ts/lib/ReadonlyArray";
 //   );
 // };
 
-export const parseTitle = (event: any): E.Either<Errors[], string> => {
+export const parseTitle = (event: any): E.Either<string[], string> => {
   return pipe(
     E.tryCatch(
       () => event.body.title,
-      (_) => [clientError("Title must be given!!")]
+      (_) => ["Title must be given!!"]
     ),
     E.chain((title) =>
       typeof title === "string"
         ? E.right(title)
-        : E.left([clientError("Title must be given!!")])
+        : E.left(["Title must be given!!"])
     ),
     E.chain((title) =>
-      title.length === 0
-        ? E.left([clientError("Title must be given!!")])
-        : E.right(title)
+      title.length === 0 ? E.left(["Title must be given!!"]) : E.right(title)
     )
   );
 };
 
-const app = E.getApplicativeValidation(A.getSemigroup<Errors>());
+const app = E.getApplicativeValidation(A.getSemigroup<string>());
 
 export const prepareRequest = (
   event: any

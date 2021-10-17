@@ -8,20 +8,48 @@ describe("create-auction parseEvent", () => {
       body: {
         title: "mac mini",
       },
+      requestContext: {
+        authorizer: {
+          claims: {
+            email: "abc@gmail.com",
+          },
+        },
+      },
     };
 
     const result = prepareRequest(event);
 
-    expect(result).toEqual(E.right({ title: "mac mini" }));
+    expect(result).toEqual(
+      E.right({ title: "mac mini", email: "abc@gmail.com" })
+    );
   });
 
-  it("should throw", () => {
+  it("should result in error", () => {
     const event = {
-      body: {},
+      body: {
+        title: "mac mini",
+      },
     };
 
     const result = prepareRequest(event);
 
-    expect(result).toEqual(E.left(clientError("No Title!!")));
+    expect(result).toEqual(E.left(clientError("Email must be given!!")));
+  });
+
+  it("should result in error", () => {
+    const event = {
+      body: {},
+      requestContext: {
+        authorizer: {
+          claims: {
+            email: "abc@gmail.com",
+          },
+        },
+      },
+    };
+
+    const result = prepareRequest(event);
+
+    expect(result).toEqual(E.left(clientError("Title must be given!!")));
   });
 });

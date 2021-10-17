@@ -7,35 +7,33 @@ import * as E from "fp-ts/lib/Either";
 import { sequenceS, sequenceT } from "fp-ts/lib/Apply";
 import * as A from "fp-ts/lib/ReadonlyArray";
 
-const parseId = (event: any): E.Either<Errors[], string> => {
+const parseId = (event: any): E.Either<string[], string> => {
   return pipe(
     E.tryCatch(
       () => event.pathParameters.id,
-      (_) => [clientError("Id must be given!!")]
+      (_) => ["Id must be given!!"]
     ),
     E.chain((id) =>
-      typeof id === "string"
-        ? E.right(id)
-        : E.left([clientError("Id must be given!!")])
+      typeof id === "string" ? E.right(id) : E.left(["Id must be given!!"])
     )
   );
 };
 
-const parseAmount = (event: any): E.Either<Errors[], number> => {
+const parseAmount = (event: any): E.Either<string[], number> => {
   return pipe(
     E.tryCatch(
       () => event.body.amount,
-      (_) => [clientError("Amount must be given!!")]
+      (_) => ["Amount must be given!!"]
     ),
     E.chain((amount) =>
       typeof amount === "number"
         ? E.right(amount)
-        : E.left([clientError("Amount must be given!!")])
+        : E.left(["Amount must be given!!"])
     )
   );
 };
 
-const app = E.getApplicativeValidation(A.getSemigroup<Errors>());
+const app = E.getApplicativeValidation(A.getSemigroup<string>());
 
 export const prepareRequest = (
   event: any
