@@ -6,6 +6,7 @@ import * as ddb from "@aws-cdk/aws-dynamodb";
 import * as event from "@aws-cdk/aws-events";
 import * as eventTargets from "@aws-cdk/aws-events-targets";
 import * as cognito from "@aws-cdk/aws-cognito";
+import { AuthorizationType } from "@aws-cdk/aws-apigateway";
 
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
@@ -153,6 +154,14 @@ export class AuctionServiceStack extends base.BaseStack {
     });
 
     /************* REST API *************/
+    const auctionAuthorizer = new apigw.CognitoUserPoolsAuthorizer(
+      this,
+      "AuctionAuthorizer",
+      {
+        cognitoUserPools: [userPool],
+      }
+    );
+
     const restApi = new apigw.RestApi(this, "Api", {
       restApiName: `${projectPrefix}-${stackConfig.ApiGateWayName}`,
       endpointTypes: [apigw.EndpointType.REGIONAL],
@@ -163,23 +172,35 @@ export class AuctionServiceStack extends base.BaseStack {
     const createAuctionIntegration = new apigw.LambdaIntegration(
       createAuctionLambda
     );
-    auctionResource.addMethod("POST", createAuctionIntegration);
+    auctionResource.addMethod("POST", createAuctionIntegration, {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: auctionAuthorizer,
+    });
 
     // GET auctions
     const auctionsResource = restApi.root.addResource("auctions");
     const getAuctionsIntegration = new apigw.LambdaIntegration(
       getAuctionsLambda
     );
-    auctionsResource.addMethod("GET", getAuctionsIntegration);
+    auctionsResource.addMethod("GET", getAuctionsIntegration, {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: auctionAuthorizer,
+    });
 
     // GET auction/{id}
     const auctionIdResource = auctionResource.addResource("{id}");
     const getAuctionIntegration = new apigw.LambdaIntegration(getAuctionLambda);
-    auctionIdResource.addMethod("GET", getAuctionIntegration);
+    auctionIdResource.addMethod("GET", getAuctionIntegration, {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: auctionAuthorizer,
+    });
 
     // PATCH auction/{id}/bid
     const bidResource = auctionIdResource.addResource("bid");
     const placeBidIntegration = new apigw.LambdaIntegration(placeBidLambda);
-    bidResource.addMethod("PATCH", placeBidIntegration);
+    bidResource.addMethod("PATCH", placeBidIntegration, {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: auctionAuthorizer,
+    });
   }
 }
