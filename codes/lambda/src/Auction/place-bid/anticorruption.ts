@@ -1,3 +1,4 @@
+import { parseEmail } from "./../common/auth";
 import { pipe } from "fp-ts/lib/function";
 import { PlaceBidRequest } from "./types";
 import { clientError, Errors } from "../common/errors";
@@ -40,15 +41,12 @@ export const prepareRequest = (
   event: any
 ): E.Either<Errors, PlaceBidRequest> => {
   return pipe(
-    sequenceT(app)(parseId(event), parseAmount(event)),
-    E.bimap(
-      (errors) => errors.map((error) => error.message).join(", "),
-      ([id, amount]) => ({
-        id,
-        amount,
-      })
-    ),
-    E.mapLeft(clientError)
+    sequenceS(app)({
+      id: parseId(event),
+      amount: parseAmount(event),
+      bidderEmail: parseEmail(event),
+    }),
+    E.mapLeft((errors) => clientError(errors.join(", ")))
   );
 };
 

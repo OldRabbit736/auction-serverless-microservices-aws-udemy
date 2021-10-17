@@ -43,7 +43,7 @@ export const notFound = (message?: string): NotFoundError => {
   };
 };
 
-export const Forbidden = (message?: string): Forbidden => {
+export const forbidden = (message?: string): Forbidden => {
   return {
     type: "Forbidden",
     message,

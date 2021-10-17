@@ -24,10 +24,10 @@ Authorization: {{token}}
 
 ###
 
-PATCH {{apiendpoint}}/auction/91620779-9a2a-4633-aab1-152fd707b357/bid
+PATCH {{apiendpoint}}/auction/4377da71-33e1-4238-9997-ed2f82d1f77b/bid
 Content-Type: application/json
 Authorization: {{token}}
 
 {
-    "amount": 2
+    "amount": 4
 }

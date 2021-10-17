@@ -14,7 +14,9 @@ export const workflow =
   (request: PlaceBidRequest): TE.TaskEither<Errors, Auction> => {
     return pipe(
       () => getAuctionByIdPort(request.id),
-      TE.chain(flow(isBiddable(request.amount), TE.fromEither)),
-      TE.chain((_) => () => placeBidPort(request.id)(request.amount))
+      TE.chain(
+        flow(isBiddable(request.amount, request.bidderEmail), TE.fromEither)
+      ),
+      TE.chain((_) => () => placeBidPort(request))
     );
   };
