@@ -14,6 +14,7 @@ type AuctionProps = {
   highestBid: {
     amount: number;
   };
+  seller: string;
 };
 
 type AuctionBrand = {
@@ -49,7 +50,7 @@ export const isBiddable = (amount: number) => (auction: Auction) => {
 };
 
 export const makeAuction =
-  (title: string) =>
+  ({ title, email }: { title: string; email: string }) =>
   ({
     startDate,
     endDate,
@@ -74,6 +75,7 @@ export const makeAuction =
       highestBid: {
         amount: 0,
       },
+      seller: email,
     };
 
     return alwaysPass(a)
