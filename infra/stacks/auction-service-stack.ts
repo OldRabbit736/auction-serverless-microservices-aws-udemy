@@ -7,6 +7,7 @@ import * as event from "@aws-cdk/aws-events";
 import * as eventTargets from "@aws-cdk/aws-events-targets";
 import * as cognito from "@aws-cdk/aws-cognito";
 import { AuthorizationType } from "@aws-cdk/aws-apigateway";
+import * as iam from "@aws-cdk/aws-iam";
 
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
@@ -202,5 +203,25 @@ export class AuctionServiceStack extends base.BaseStack {
       authorizationType: AuthorizationType.COGNITO,
       authorizer: auctionAuthorizer,
     });
+
+    /************* Mail *************/
+    const mailerLambda = new nodelambda.NodejsFunction(this, "send-mail", {
+      entry: "codes/lambda/src/Auction/handlers/send-mail.ts",
+      handler: "handler",
+      memorySize: 128,
+      timeout: cdk.Duration.minutes(2),
+    });
+
+    mailerLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["ses:SendEmail"],
+        resources: [
+          `arn:aws:ses:ap-northeast-2:${
+            cdk.Stack.of(this).account
+          }:identity/sylvan0212@gmail.com`,
+        ],
+      })
+    );
   }
 }
