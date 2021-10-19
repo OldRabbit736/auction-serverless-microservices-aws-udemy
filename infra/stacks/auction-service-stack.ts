@@ -13,6 +13,7 @@ import * as sqs from "@aws-cdk/aws-sqs";
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
 import { SqsEventSource } from "@aws-cdk/aws-lambda-event-sources";
+import { CfnOutput } from "@aws-cdk/core";
 
 export class AuctionServiceStack extends base.BaseStack {
   constructor(
@@ -233,5 +234,16 @@ export class AuctionServiceStack extends base.BaseStack {
     mailerLambda.addEventSource(
       new SqsEventSource(mailQueue, { batchSize: 1 })
     );
+
+    processAuctionsLambda.addEnvironment("MAIL_QUEUE_URL", mailQueue.queueUrl);
+    mailQueue.grantSendMessages(processAuctionsLambda);
+
+    /************* Outputs *************/
+    new CfnOutput(this, "MailQueueUrl", {
+      value: mailQueue.queueUrl,
+    });
+    new CfnOutput(this, "MailQueueArn", {
+      value: mailQueue.queueArn,
+    });
   }
 }
