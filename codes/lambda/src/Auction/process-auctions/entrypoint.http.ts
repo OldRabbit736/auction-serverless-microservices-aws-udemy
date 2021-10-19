@@ -5,13 +5,12 @@ import {
   getEndedAuctionsPortImplAWS,
 } from "./implementation/aws";
 
-import { notFound } from "../common/errors";
-
 import * as TE from "fp-ts/lib/TaskEither";
 import * as A from "fp-ts/lib/Array";
 import * as T from "fp-ts/lib/Task";
+import { request } from "./transformer";
 
-const processAuctions = async (event: any) => {
+const processAuctions = async (_: any) => {
   return pipe(
     () => getEndedAuctionsPortImplAWS(),
     // TE.chainW((items) =>
@@ -19,10 +18,10 @@ const processAuctions = async (event: any) => {
     //     ? TE.left(notFound("No Auctions Found"))
     //     : TE.right(items)
     // ),
-    TE.map((items) => items.map((item) => item.id as string)),
-    TE.chain((auctionIds) => {
+    TE.map((items) => items.map(request)),
+    TE.chain((requests) => {
       return A.sequence(TE.ApplicativePar)(
-        auctionIds.map((id) => () => closeAuctionPortImplAWS(id))
+        requests.map((request) => () => closeAuctionPortImplAWS(request))
       );
     }),
     TE.bimap(handleError, (outputs) => ({
