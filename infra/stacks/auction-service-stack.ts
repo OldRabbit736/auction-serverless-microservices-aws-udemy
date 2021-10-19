@@ -8,9 +8,11 @@ import * as eventTargets from "@aws-cdk/aws-events-targets";
 import * as cognito from "@aws-cdk/aws-cognito";
 import { AuthorizationType } from "@aws-cdk/aws-apigateway";
 import * as iam from "@aws-cdk/aws-iam";
+import * as sqs from "@aws-cdk/aws-sqs";
 
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
+import { SqsEventSource } from "@aws-cdk/aws-lambda-event-sources";
 
 export class AuctionServiceStack extends base.BaseStack {
   constructor(
@@ -204,12 +206,12 @@ export class AuctionServiceStack extends base.BaseStack {
       authorizer: auctionAuthorizer,
     });
 
-    /************* Mail *************/
+    /************* Mail Lambda, Queue *************/
     const mailerLambda = new nodelambda.NodejsFunction(this, "send-mail", {
       entry: "codes/lambda/src/Auction/handlers/send-mail.ts",
       handler: "handler",
       memorySize: 128,
-      timeout: cdk.Duration.minutes(2),
+      timeout: cdk.Duration.seconds(30),
     });
 
     mailerLambda.addToRolePolicy(
@@ -222,6 +224,14 @@ export class AuctionServiceStack extends base.BaseStack {
           }:identity/sylvan0212@gmail.com`,
         ],
       })
+    );
+
+    const mailQueue = new sqs.Queue(this, "mailQueue", {
+      visibilityTimeout: cdk.Duration.seconds(30),
+    });
+
+    mailerLambda.addEventSource(
+      new SqsEventSource(mailQueue, { batchSize: 1 })
     );
   }
 }
