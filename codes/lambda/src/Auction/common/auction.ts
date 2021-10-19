@@ -30,13 +30,15 @@ const alwaysPass = (a: AuctionProps): a is Auction => {
 export const isBiddable =
   (amount: number, bidder: string) => (auction: Auction) => {
     const isAmountHigher = (amount: number) => (auction: Auction) =>
-      auction.highestBid.amount < amount
-        ? E.right(auction)
-        : E.left(
-            forbidden(
-              `Your bid must be higher than ${auction.highestBid.amount}`
+      auction.highestBid.amount
+        ? auction.highestBid.amount < amount
+          ? E.right(auction)
+          : E.left(
+              forbidden(
+                `Your bid must be higher than ${auction.highestBid.amount}`
+              )
             )
-          );
+        : E.right(auction);
 
     const isAuctionNotClosed = (auction: Auction) =>
       auction.status === "OPEN"

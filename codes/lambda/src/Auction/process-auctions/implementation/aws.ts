@@ -65,20 +65,32 @@ export const closeAuctionPortImplAWS = async (request: CloseAuctionRequest) => {
     ),
     TE.map((_) => notifyMessages(request)),
     TE.chain((notifyMessageRequests) =>
-      sequenceS(TE.ApplicativePar)({
-        notifySeller: TE.tryCatch(
-          () => sqs.sendMessage(notifyMessageRequests.notifySeller).promise(),
-          getMessageOr(
-            `Error sending notifying email to seller. auction id: ${request.auctionId}`
-          )
-        ),
-        notifyBidder: TE.tryCatch(
-          () => sqs.sendMessage(notifyMessageRequests.notifyBidder).promise(),
-          getMessageOr(
-            `Error sending notifying email to bidder. auction id: ${request.auctionId}`
-          )
-        ),
-      })
+      notifyMessageRequests.tag === "NotifySellerBidderRequests"
+        ? sequenceS(TE.ApplicativePar)({
+            notifySeller: TE.tryCatch(
+              () =>
+                sqs.sendMessage(notifyMessageRequests.notifySeller).promise(),
+              getMessageOr(
+                `Error sending notifying email to seller. auction id: ${request.auctionId}`
+              )
+            ),
+            notifyBidder: TE.tryCatch(
+              () =>
+                sqs.sendMessage(notifyMessageRequests.notifyBidder).promise(),
+              getMessageOr(
+                `Error sending notifying email to bidder. auction id: ${request.auctionId}`
+              )
+            ),
+          })
+        : sequenceS(TE.ApplicativePar)({
+            notifySeller: TE.tryCatch(
+              () =>
+                sqs.sendMessage(notifyMessageRequests.notifySeller).promise(),
+              getMessageOr(
+                `Error sending notifying email to seller. auction id: ${request.auctionId}`
+              )
+            ),
+          })
     ),
     TE.mapLeft(serverError)
   )();
@@ -86,18 +98,30 @@ export const closeAuctionPortImplAWS = async (request: CloseAuctionRequest) => {
 
 const notifyMessages = (
   request: CloseAuctionRequest
-): NotifyMessageRequests => ({
-  notifySeller: messageRequest(process.env.MAIL_QUEUE_URL!)({
-    subject: "Your item has been sold!",
-    recipient: request.seller,
-    body: `Woohoo! Your item "${request.title}" has been sold for $${request.amount}`,
-  }),
-  notifyBidder: messageRequest(process.env.MAIL_QUEUE_URL!)({
-    subject: "You won an auction!",
-    recipient: request.bidder,
-    body: `What a great deal! You got yourself a "${request.title}" for $${request.amount}`,
-  }),
-});
+): NotifyMessageRequests => {
+  return request.tag === "WithBidder"
+    ? {
+        tag: "NotifySellerBidderRequests",
+        notifySeller: messageRequest(process.env.MAIL_QUEUE_URL!)({
+          subject: "Your item has been sold!",
+          recipient: request.seller,
+          body: `Woohoo! Your item "${request.title}" has been sold for $${request.amount}`,
+        }),
+        notifyBidder: messageRequest(process.env.MAIL_QUEUE_URL!)({
+          subject: "You won an auction!",
+          recipient: request.bidder,
+          body: `What a great deal! You got yourself a "${request.title}" for $${request.amount}`,
+        }),
+      }
+    : {
+        tag: "NotifySellerRequest",
+        notifySeller: messageRequest(process.env.MAIL_QUEUE_URL!)({
+          subject: "Auction Ends",
+          recipient: request.seller,
+          body: `Oh no! No bids on your "${request.title}" item`,
+        }),
+      };
+};
 
 const messageRequest =
   (queUrl: string) =>
@@ -112,7 +136,15 @@ type Message = {
   body: string;
 };
 
-type NotifyMessageRequests = {
+type NotifyMessageRequests = NotifySellerRequest | NotifySellerBidderRequests;
+
+type NotifySellerRequest = {
+  tag: "NotifySellerRequest";
+  notifySeller: SendMessageRequest;
+};
+
+type NotifySellerBidderRequests = {
+  tag: "NotifySellerBidderRequests";
   notifySeller: SendMessageRequest;
   notifyBidder: SendMessageRequest;
 };

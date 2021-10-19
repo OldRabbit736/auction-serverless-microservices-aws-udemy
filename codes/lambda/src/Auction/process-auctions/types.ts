@@ -1,7 +1,19 @@
-export type CloseAuctionRequest = {
+export type CloseAuctionRequest = ClosingAuction;
+
+export type ClosingAuction = WithoutBidder | WithBidder;
+
+export type WithoutBidder = {
+  tag: "WithoutBidder";
   auctionId: string;
   title: string;
   seller: string;
-  amount: number;
+};
+
+export type WithBidder = {
+  tag: "WithBidder";
+  auctionId: string;
+  title: string;
+  seller: string;
   bidder: string;
+  amount: number;
 };
