@@ -9,6 +9,7 @@ import * as cognito from "@aws-cdk/aws-cognito";
 import { AuthorizationType } from "@aws-cdk/aws-apigateway";
 import * as iam from "@aws-cdk/aws-iam";
 import * as sqs from "@aws-cdk/aws-sqs";
+import * as s3 from "@aws-cdk/aws-s3";
 
 import * as base from "../../lib/stack/base-stack";
 import { AuctionService } from "../../config/types/config";
@@ -237,6 +238,37 @@ export class AuctionServiceStack extends base.BaseStack {
 
     processAuctionsLambda.addEnvironment("MAIL_QUEUE_URL", mailQueue.queueUrl);
     mailQueue.grantSendMessages(processAuctionsLambda);
+
+    /************* S3 *************/
+    const uploadAuctionPictureLambda = new nodelambda.NodejsFunction(
+      this,
+      "upload-auction-picture",
+      {
+        entry:
+          "codes/lambda/src/Auction/upload-auction-picture/entrypoint.http.ts",
+        handler: "handler",
+        memorySize: 128,
+        timeout: cdk.Duration.minutes(2),
+      }
+    );
+
+    // PATCH auction/{id}/picture
+    const pictureResource = auctionIdResource.addResource("picture");
+    const uploadAuctionPictureIntegration = new apigw.LambdaIntegration(
+      uploadAuctionPictureLambda
+    );
+    pictureResource.addMethod("PATCH", uploadAuctionPictureIntegration, {
+      authorizationType: AuthorizationType.COGNITO,
+      authorizer: auctionAuthorizer,
+    });
+
+    const pictureBucket = new s3.Bucket(this, "auction-bucket-ra3pb2xoj2");
+    pictureBucket.grantWrite(uploadAuctionPictureLambda);
+
+    uploadAuctionPictureLambda.addEnvironment(
+      "AUCTIONS_BUCKET_NAME",
+      pictureBucket.bucketName
+    );
 
     /************* Outputs *************/
     new CfnOutput(this, "MailQueueUrl", {
