@@ -251,7 +251,7 @@ export class AuctionServiceStack extends base.BaseStack {
         timeout: cdk.Duration.minutes(2),
       }
     );
-    auctionsTable.grantReadData(uploadAuctionPictureLambda);
+    auctionsTable.grantReadWriteData(uploadAuctionPictureLambda);
 
     // PATCH auction/{id}/picture
     const pictureResource = auctionIdResource.addResource("picture");

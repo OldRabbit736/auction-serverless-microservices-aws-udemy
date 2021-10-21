@@ -7,10 +7,12 @@ import { UploadAuctionPictureRequest } from "./types";
 import { Errors } from "../common/errors";
 import { getMessageOr } from "../common/util";
 import { UploadPictureToStoragePort } from "./storage";
+import { AddPictureUrlPort } from "./database";
 
 export const workflow =
   (getAuctionByIdPort: GetAuctionByIdPort) =>
   (uploadPictureToStoragePort: UploadPictureToStoragePort) =>
+  (addPictureUrlPort: AddPictureUrlPort) =>
   (request: UploadAuctionPictureRequest): TE.TaskEither<Errors, any> => {
     return pipe(
       () => getAuctionByIdPort(request.auctionId),
@@ -20,6 +22,9 @@ export const workflow =
             uploadPictureToStoragePort(request.auctionId, request.base64Buffer),
           (u) => serverError(getMessageOr("Error uploading picture")(u))
         )
+      ),
+      TE.chain(
+        (location) => () => addPictureUrlPort(request.auctionId, location)
       )
     );
   };
