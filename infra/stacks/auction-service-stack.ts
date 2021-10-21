@@ -251,6 +251,7 @@ export class AuctionServiceStack extends base.BaseStack {
         timeout: cdk.Duration.minutes(2),
       }
     );
+    auctionsTable.grantReadData(uploadAuctionPictureLambda);
 
     // PATCH auction/{id}/picture
     const pictureResource = auctionIdResource.addResource("picture");
@@ -262,12 +263,25 @@ export class AuctionServiceStack extends base.BaseStack {
       authorizer: auctionAuthorizer,
     });
 
-    const pictureBucket = new s3.Bucket(this, "auction-bucket-ra3pb2xoj2");
+    const pictureBucket = new s3.Bucket(this, "auction-bucket-ra3pb2xoj2", {
+      lifecycleRules: [
+        {
+          id: "ExpirePictures",
+          expiration: cdk.Duration.days(1),
+          enabled: true,
+        },
+      ],
+      publicReadAccess: true,
+    });
     pictureBucket.grantWrite(uploadAuctionPictureLambda);
 
     uploadAuctionPictureLambda.addEnvironment(
       "AUCTIONS_BUCKET_NAME",
       pictureBucket.bucketName
+    );
+    uploadAuctionPictureLambda.addEnvironment(
+      "AUCTIONS_TABLE_NAME",
+      auctionsTable.tableName
     );
 
     /************* Outputs *************/
