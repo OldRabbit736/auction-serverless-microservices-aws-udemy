@@ -7,6 +7,7 @@ import { clientError, Errors } from "./../common/errors";
 import { parseId } from "./../common/parseId";
 import { UploadAuctionPictureRequest } from "./types";
 import { parseBody } from "../common/parseBody";
+import { parseEmail } from "../common/auth";
 
 export const prepareRequest = (
   event: any
@@ -15,6 +16,7 @@ export const prepareRequest = (
     sequenceS(app)({
       auctionId: parseId("Id must be given!!")(event),
       base64Buffer: base64Buffer(event),
+      requestor: parseEmail(event),
     }),
     E.mapLeft((errors) => errors.join(", ")),
     E.mapLeft(clientError)

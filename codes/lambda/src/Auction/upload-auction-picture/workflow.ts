@@ -1,7 +1,8 @@
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/lib/TaskEither";
+import * as E from "fp-ts/lib/Either";
 
-import { serverError } from "./../common/errors";
+import { clientError, serverError } from "./../common/errors";
 import { GetAuctionByIdPort } from "../get-auction-by-id/database";
 import { UploadAuctionPictureRequest } from "./types";
 import { Errors } from "../common/errors";
@@ -16,6 +17,11 @@ export const workflow =
   (request: UploadAuctionPictureRequest): TE.TaskEither<Errors, any> => {
     return pipe(
       () => getAuctionByIdPort(request.auctionId),
+      TE.chain((auction) =>
+        auction.seller === request.requestor
+          ? TE.fromEither(E.right(auction))
+          : TE.fromEither(E.left(clientError("The auction is not yours")))
+      ),
       TE.chain((_) =>
         TE.tryCatch(
           () =>
