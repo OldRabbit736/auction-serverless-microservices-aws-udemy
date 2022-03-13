@@ -6,20 +6,5 @@ Serverless Framework Bootcamp: Node.js, AWS & Microservices
 
 ### 특징
 
-기존 강의는 "Serverless" framework를 사용하였지만,
-나는 CDK를 이용하여 진행하였다.
-
-# Welcome to your CDK TypeScript project!
-
-This is a blank project for TypeScript development with CDK.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
-
-## Useful commands
-
-- `npm run build` compile typescript to js
-- `npm run watch` watch for changes and compile
-- `npm run test` perform the jest unit tests
-- `cdk deploy` deploy this stack to your default AWS account/region
-- `cdk diff` compare deployed stack with current state
-- `cdk synth` emits the synthesized CloudFormation template
+- 기존 강의는 "Serverless framework"를 사용하였지만, 나는 CDK를 이용하여 진행하였다.
+- 로직 부분을 fp-ts 라이브러리를 이용하여 "Functional Programming in Typescript (by Sam Van Overmeire)"에서 설명한 방식으로 작성하였다.
